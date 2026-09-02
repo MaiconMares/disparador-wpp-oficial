@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestão Fitness Brasil — Disparador WhatsApp</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="apple-touch-icon" href="favicon.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ─── Tela de Login ───────────────────────────────────────────────────── -->
+  <div id="auth-gate" class="auth-gate">
+    <div class="auth-wrap">
+      <form id="login-form" class="auth-card">
+        <div class="auth-card-header">
+          <img src="logo.png" alt="Gestão Fitness Brasil" />
+        </div>
+
+        <div class="auth-card-body">
+          <h1 class="auth-title">Entrar</h1>
+          <p class="auth-subtitle">Acesse sua conta para ver seus disparos e mensagens.</p>
+
+          <div id="login-error" class="auth-error hidden"></div>
+
+          <div class="form-group">
+            <label for="login-email">E-mail</label>
+            <input type="email" id="login-email" placeholder="voce@academia.com.br" autocomplete="username" required />
+          </div>
+
+          <div class="form-group">
+            <div class="auth-label-row">
+              <label for="login-password">Senha</label>
+              <button type="button" id="forgot-password-btn" class="auth-link">Esqueci minha senha</button>
+            </div>
+            <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" required />
+          </div>
+
+          <button type="submit" id="login-btn" class="btn-primary auth-submit">Entrar</button>
+          <p class="auth-hint">Não tem acesso? Peça ao administrador para criar sua conta.</p>
+        </div>
+      </form>
+
+      <p class="auth-footer">Gestão Fitness Brasil · Gerenciador API oficial Whatsapp</p>
+    </div>
+  </div>
+
+  <!-- ─── Sidebar ─────────────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="logo.png" alt="Gestão Fitness Brasil" class="sidebar-logo-img" />
+      <img src="logo-mark.png" alt="Gestão Fitness Brasil" class="sidebar-logo-mark" />
+    </div>
+
+    <nav class="sidebar-nav">
+      <p class="nav-label">Menu</p>
+
+      <a href="#" class="nav-item active" data-view="cloud">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="currentColor" stroke="none"></path>
+          <path d="M11.998 1C6.477 1 2 5.477 2 11c0 1.846.502 3.576 1.378 5.063L2 21l5.09-1.336A9.937 9.937 0 0011.998 21c5.523 0 10-4.477 10-10S17.521 1 11.998 1z" fill="none"></path>
+        </svg>
+        <span>API Oficial WhatsApp</span>
+      </a>
+
+      <a href="#" class="nav-item" data-view="evolution">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+        <span>Evolution API</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div id="connection-status" class="connection-badge connecting">
+        <span class="status-dot"></span>
+        <span class="status-text">Conectando...</span>
+      </div>
+      <div class="sidebar-user">
+        <span id="sidebar-user-email" class="sidebar-user-email"></span>
+        <button type="button" id="logout-btn" class="sidebar-logout">Sair</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ─── View: WhatsApp Cloud API (Oficial) ───────────────────────────────── -->
+  <main class="main-content view active" id="view-cloud">
+
+    <header class="page-header">
+      <h1>WhatsApp Cloud API</h1>
+      <p class="page-subtitle">Dispare mensagens e monitore entregas em tempo real via Meta Cloud API.</p>
+    </header>
+
+    <div class="content-area" id="cloud-content-area">
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <p class="stat-label">Mensagens Enviadas</p>
+          <p class="stat-value" id="stat-sent">—</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Mensagens Recebidas</p>
+          <p class="stat-value" id="stat-received">—</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Entregues</p>
+          <p class="stat-value" id="stat-delivered">—</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Lidas</p>
+          <p class="stat-value" id="stat-read">—</p>
+        </div>
+      </div>
+
+      <!-- Send Message Form -->
+      <section id="send-section" class="card">
+        <h2 class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+          Disparar Mensagem
+        </h2>
+
+        <form id="send-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone-id-input">Phone Number ID</label>
+              <input type="text" id="phone-id-input" placeholder="123456789012345" autocomplete="off" required />
+            </div>
+            <div class="form-group">
+              <label for="token-input">Bearer Token</label>
+              <input type="password" id="token-input" placeholder="EAAG..." autocomplete="off" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="waba-id-input">WhatsApp Business Account ID</label>
+              <input type="text" id="waba-id-input" placeholder="884651083662908" autocomplete="off" />
+              <p class="field-hint">Necessário apenas para buscar os modelos de mensagem aprovados. Pegue este ID em developers.facebook.com → seu App → WhatsApp → Configuração da API, no campo "ID da conta comercial do WhatsApp" — <strong>não</strong> é o mesmo número que aparece como <code>business_id</code> na URL do Gestor do WhatsApp (esse é o ID do Business Manager).</p>
+            </div>
+          </div>
+          <p class="field-hint" style="margin-top:-10px; margin-bottom:18px;">Salvos apenas no seu navegador (localStorage) — nunca enviados para outro lugar além da sua própria API.</p>
+
+          <div class="mode-toggle">
+            <label class="radio-label">
+              <input type="radio" name="send-mode" id="mode-text-radio" value="text" checked />
+              Mensagem de Texto Livre
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="send-mode" id="mode-template-radio" value="template" />
+              Mensagem de Modelo (Template)
+            </label>
+          </div>
+
+          <div id="text-mode-fields" class="form-group">
+            <label for="message-input">Mensagem</label>
+            <textarea id="message-input" rows="4" placeholder="Digite a mensagem que será enviada..."></textarea>
+          </div>
+
+          <div id="template-mode-fields" class="hidden">
+            <div class="form-group">
+              <div class="button-row" style="margin-bottom:10px;">
+                <button type="button" id="fetch-templates-btn" class="btn-secondary">Buscar Modelos</button>
+                <span id="templates-fetch-status" class="field-hint"></span>
+              </div>
+              <label for="template-select">Modelo Aprovado</label>
+              <select id="template-select">
+                <option value="">— Busque os modelos primeiro —</option>
+              </select>
+            </div>
+
+            <div id="template-header-media-group" class="form-group hidden">
+              <label for="template-header-media-input">URL da mídia do cabeçalho</label>
+              <input type="text" id="template-header-media-input" placeholder="https://exemplo.com/imagem.jpg" />
+            </div>
+
+            <div id="template-variables"></div>
+
+            <div id="template-preview-group" class="form-group hidden">
+              <label>Pré-visualização</label>
+              <div id="template-preview" class="template-preview"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="numbers-input">Números de WhatsApp</label>
+            <input type="text" id="numbers-input" placeholder="5511999999999, 5511888888888" required />
+            <p class="field-hint">Código do país + DDD + número, sem espaços ou símbolos. Separe múltiplos números com vírgula.</p>
+          </div>
+          <button type="submit" id="send-btn" class="btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+            Enviar Mensagem
+          </button>
+        </form>
+
+        <div id="send-results" class="send-results hidden"></div>
+      </section>
+
+      <!-- Two-column: Incoming + Status -->
+      <div class="two-col-grid">
+
+        <section id="incoming-section" class="card">
+          <h2 class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"></path>
+            </svg>
+            Mensagens Recebidas
+            <span class="live-badge">Ao Vivo</span>
+          </h2>
+          <div id="incoming-list" class="message-list">
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36">
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"></path>
+              </svg>
+              <p>Nenhuma mensagem recebida ainda</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="status-section" class="card">
+          <h2 class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            </svg>
+            Atualizações de Status
+            <span class="live-badge">Ao Vivo</span>
+          </h2>
+          <div id="status-list" class="message-list">
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+              <p>Nenhuma atualização de status ainda</p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Sent Messages History -->
+      <section id="sent-section" class="card">
+        <h2 class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <polyline points="9 11 12 14 22 4"></polyline>
+            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+          </svg>
+          Histórico de Envios
+        </h2>
+        <div id="sent-list" class="message-list">
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36">
+              <polyline points="9 11 12 14 22 4"></polyline>
+              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+            </svg>
+            <p>Nenhuma mensagem enviada ainda</p>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /content-area -->
+
+    <!-- ─── Chat: Responder cliente (janela de 24h) ───────────────────────── -->
+    <div id="chat-view" class="chat-view hidden">
+      <div class="chat-header">
+        <button type="button" id="chat-close-btn" class="chat-close-btn" aria-label="Fechar conversa">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <div class="chat-header-info">
+          <p class="chat-contact-number" id="chat-contact-number">—</p>
+          <p class="chat-window-status" id="chat-window-status">—</p>
+        </div>
+      </div>
+
+      <div class="chat-messages" id="chat-messages"></div>
+
+      <div id="chat-window-closed-banner" class="chat-closed-banner hidden">
+        Janela de 24h encerrada — o cliente precisa enviar uma nova mensagem, ou você deve usar um modelo (template) aprovado, para reabrir a conversa.
+      </div>
+
+      <form id="chat-send-form" class="chat-input-row">
+        <input type="text" id="chat-message-input" placeholder="Digite sua mensagem..." autocomplete="off" />
+        <button type="submit" id="chat-send-btn" class="btn-primary">Enviar</button>
+      </form>
+    </div>
+  </main>
+
+  <!-- ─── View: Evolution API ───────────────────────────────────────────────── -->
+  <main class="main-content view" id="view-evolution">
+
+    <header class="page-header">
+      <h1>Evolution API</h1>
+      <p class="page-subtitle">Dispare mensagens via Evolution API (WhatsApp não-oficial) com regras anti-bloqueio e monitore tudo em tempo real.</p>
+    </header>
+
+    <div class="content-area">
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <p class="stat-label">Mensagens Enviadas</p>
+          <p class="stat-value" id="stat-evo-sent">—</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Mensagens Recebidas</p>
+          <p class="stat-value" id="stat-evo-received">—</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Entregues</p>
+          <p class="stat-value" id="stat-evo-delivered">—</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Lidas</p>
+          <p class="stat-value" id="stat-evo-read">—</p>
+        </div>
+      </div>
+
+      <!-- Instance status -->
+      <section class="card">
+        <h2 class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          Status da Instância
+          <button type="button" id="evo-refresh-status-btn" class="btn-secondary" style="margin-left:auto;">Atualizar</button>
+        </h2>
+
+        <div class="instance-status-row">
+          <div id="evo-instance-badge" class="connection-badge connecting large">
+            <span class="status-dot"></span>
+            <span class="status-text">Verificando...</span>
+          </div>
+          <div class="instance-meta">
+            <p><strong>Instância:</strong> <span id="evo-instance-name-display">—</span></p>
+            <p><strong>Última verificação:</strong> <span id="evo-last-check">—</span></p>
+          </div>
+        </div>
+        <div id="evo-status-error" class="error-box hidden"></div>
+      </section>
+
+      <!-- Credentials -->
+      <section class="card">
+        <h2 class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0110 0v4"></path>
+          </svg>
+          Credenciais da Evolution API
+        </h2>
+
+        <form id="evo-credentials-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="evo-base-url-input">URL Base da API</label>
+              <input type="text" id="evo-base-url-input" placeholder="https://sua-evolution-api.com" autocomplete="off" required />
+            </div>
+            <div class="form-group">
+              <label for="evo-api-key-input">API Key</label>
+              <input type="password" id="evo-api-key-input" placeholder="B6D711FC..." autocomplete="off" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="evo-instance-input">Nome da Instância</label>
+              <input type="text" id="evo-instance-input" placeholder="minha-instancia" autocomplete="off" required />
+            </div>
+            <div class="form-group">
+              <label for="evo-sender-input">Número do Remetente</label>
+              <input type="text" id="evo-sender-input" placeholder="556198331313" autocomplete="off" required />
+            </div>
+          </div>
+          <p class="field-hint" style="margin-top:-10px; margin-bottom:18px;">Salvos apenas no seu navegador (localStorage) — nunca enviados para outro lugar além da sua própria API.</p>
+          <button type="submit" class="btn-primary">Salvar Credenciais</button>
+        </form>
+      </section>
+
+      <!-- Anti-ban settings -->
+      <section class="card">
+        <h2 class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          Regras Anti-Bloqueio
+        </h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="evo-min-delay-input">Delay mínimo entre envios (segundos)</label>
+            <input type="number" id="evo-min-delay-input" min="1" max="120" value="6" />
+          </div>
+          <div class="form-group">
+            <label for="evo-max-delay-input">Delay máximo entre envios (segundos)</label>
+            <input type="number" id="evo-max-delay-input" min="1" max="180" value="15" />
+          </div>
+        </div>
+
+        <div class="checkbox-row">
+          <label class="checkbox-label">
+            <input type="checkbox" id="evo-shuffle-checkbox" checked />
+            Embaralhar a ordem dos destinatários
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="evo-variation-checkbox" checked />
+            Aplicar variação invisível no texto (reduz identidade exata entre mensagens)
+          </label>
+        </div>
+
+        <div class="tips-box">
+          <p class="tips-title">Como escrever mensagens variadas (spintax)</p>
+          <p class="tips-text">Use chaves com opções separadas por <code>|</code> para que cada destinatário receba uma variação com o mesmo sentido:</p>
+          <p class="tips-example">{Oi|Olá|E aí}, tudo bem? {Temos|Preparamos} uma novidade para você.</p>
+        </div>
+
+        <div class="tips-box tips-warning">
+          <p class="tips-title">Boas práticas para não ser bloqueado</p>
+          <ul class="tips-list">
+            <li>Evite disparar a mesma mensagem, idêntica, para muitos contatos em pouco tempo.</li>
+            <li>Prefira lotes menores (até ~50 números) espaçados ao longo do dia.</li>
+            <li>Números novos devem "esquentar" gradualmente — comece com poucos envios por dia.</li>
+            <li>Evite links encurtados ou conteúdo repetitivo que pareça spam.</li>
+            <li>Para alto volume com garantia de entrega, prefira a API Oficial (Cloud API).</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Send Message Form -->
+      <section id="evo-send-section" class="card">
+        <h2 class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+          Disparar Mensagem
+        </h2>
+
+        <form id="evo-send-form">
+          <div class="form-group">
+            <label for="evo-message-input">Mensagem</label>
+            <textarea id="evo-message-input" rows="4" placeholder="Digite a mensagem (aceita spintax: {opção 1|opção 2})..." required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="evo-numbers-input">Números de WhatsApp</label>
+            <input type="text" id="evo-numbers-input" placeholder="5511999999999, 5511888888888" required />
+            <p class="field-hint">Código do país + DDD + número, sem espaços ou símbolos. Separe múltiplos números com vírgula. Máximo de 50 por disparo.</p>
+          </div>
+          <div class="button-row">
+            <button type="submit" id="evo-send-btn" class="btn-primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+              Enviar Mensagens
+            </button>
+            <button type="button" id="evo-stop-btn" class="btn-secondary hidden">Parar Envio</button>
+          </div>
+        </form>
+
+        <p id="evo-send-progress" class="field-hint hidden"></p>
+        <div id="evo-send-results" class="send-results hidden"></div>
+      </section>
+
+      <!-- Two-column: Incoming + Status -->
+      <div class="two-col-grid">
+
+        <section id="evo-incoming-section" class="card">
+          <h2 class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"></path>
+            </svg>
+            Mensagens Recebidas
+            <span class="live-badge">Ao Vivo</span>
+          </h2>
+          <div id="evo-incoming-list" class="message-list">
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36">
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"></path>
+              </svg>
+              <p>Nenhuma mensagem recebida ainda</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="evo-status-section" class="card">
+          <h2 class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            </svg>
+            Atualizações de Status
+            <span class="live-badge">Ao Vivo</span>
+          </h2>
+          <div id="evo-status-list" class="message-list">
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+              <p>Nenhuma atualização de status ainda</p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Sent Messages History -->
+      <section id="evo-sent-section" class="card">
+        <h2 class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <polyline points="9 11 12 14 22 4"></polyline>
+            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+          </svg>
+          Histórico de Envios
+        </h2>
+        <div id="evo-sent-list" class="message-list">
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36">
+              <polyline points="9 11 12 14 22 4"></polyline>
+              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+            </svg>
+            <p>Nenhuma mensagem enviada ainda</p>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /content-area -->
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
