@@ -2,7 +2,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --sidebar-bg:       #0a0f1a;
+  --sidebar-bg:       #0f1b38; /* mesmo navy do fundo do logo (--brand-navy) */
   --sidebar-border:   rgba(255,255,255,.06);
   --sidebar-text:     #8b929e;
   --sidebar-hover-bg: rgba(255,255,255,.05);
